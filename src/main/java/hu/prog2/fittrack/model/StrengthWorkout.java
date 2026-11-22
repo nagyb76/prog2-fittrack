@@ -80,7 +80,7 @@ public class StrengthWorkout extends WorkoutSession {
 
     @Override
     public String getSpecificDetails() {
-        return String.format("%d sets x %d reps @ %.1f kg (Tonnage: %.1f kg)",
+        return String.format(java.util.Locale.US, "%d sets x %d reps @ %.1f kg (Tonnage: %.1f kg)",
                 sets, reps, weightKg, getTotalTonnageKg());
     }
 

@@ -66,7 +66,7 @@ public class CardioWorkout extends WorkoutSession {
     @Override
     public String getSpecificDetails() {
         String hrStr = averageHeartRate > 0 ? averageHeartRate + " bpm" : "N/A";
-        return String.format("Distance: %.2f km, Avg Speed: %.1f km/h, Avg HR: %s",
+        return String.format(java.util.Locale.US, "Distance: %.2f km, Avg Speed: %.1f km/h, Avg HR: %s",
                 distanceKm, getAverageSpeedKmH(), hrStr);
     }
 
