@@ -1,0 +1,25 @@
+# Target build output
+target/
+*.class
+
+# IntelliJ IDEA
+.idea/
+*.iml
+out/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# VS Code
+.vscode/
+
+# OS generated
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Local runtime data files (preserve directory with sample data)
+data/workouts_runtime.json
+data/*.local.json
