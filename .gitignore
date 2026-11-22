@@ -1,6 +1,7 @@
 # Target build output
 target/
 *.class
+dependency-reduced-pom.xml
 
 # IntelliJ IDEA
 .idea/

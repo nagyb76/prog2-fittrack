@@ -111,7 +111,7 @@ public class UserProfile {
 
     @Override
     public String toString() {
-        return String.format("%s (Age: %d, Weight: %.1f kg, Gender: %s, Resting HR: %d bpm)",
+        return String.format(java.util.Locale.US, "%s (Age: %d, Weight: %.1f kg, Gender: %s, Resting HR: %d bpm)",
                 name, age, weightKg, gender.getDisplayName(), restingHeartRate);
     }
 }
