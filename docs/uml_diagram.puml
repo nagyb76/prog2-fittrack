@@ -1,0 +1,238 @@
+@startuml FitTrack_Class_Diagram
+skinparam classAttributeIconSize 0
+skinparam monochrome false
+skinparam packageStyle rectangle
+
+package "hu.prog2.fittrack.exception" {
+    class InvalidWorkoutDataException extends java.lang.Exception {
+        + InvalidWorkoutDataException(message: String)
+        + InvalidWorkoutDataException(message: String, cause: Throwable)
+    }
+
+    class WorkoutNotFoundException extends java.lang.Exception {
+        - workoutId: int
+        + WorkoutNotFoundException(workoutId: int)
+        + getWorkoutId(): int
+    }
+}
+
+package "hu.prog2.fittrack.strategy" {
+    interface CalorieCalculationStrategy <<interface>> {
+        + calculateCalories(session: WorkoutSession, profile: UserProfile): double
+        + getStrategyName(): String
+        + getStrategyDescription(): String
+    }
+
+    class MetBasedStrategy implements CalorieCalculationStrategy {
+        + calculateCalories(session: WorkoutSession, profile: UserProfile): double
+        + getStrategyName(): String
+        + getStrategyDescription(): String
+    }
+
+    class HeartRateStrategy implements CalorieCalculationStrategy {
+        - fallbackStrategy: MetBasedStrategy
+        + calculateCalories(session: WorkoutSession, profile: UserProfile): double
+        + getStrategyName(): String
+        + getStrategyDescription(): String
+    }
+}
+
+package "hu.prog2.fittrack.model" {
+    enum Gender <<enumeration>> {
+        MALE
+        FEMALE
+        OTHER
+        - displayName: String
+        + getDisplayName(): String
+    }
+
+    class UserProfile {
+        - name: String
+        - age: int
+        - weightKg: double
+        - gender: Gender
+        - restingHeartRate: int
+        + UserProfile(name: String, age: int, weightKg: double, gender: Gender, restingHr: int)
+        + getName(): String
+        + setName(name: String): void
+        + getAge(): int
+        + setAge(age: int): void
+        + getWeightKg(): double
+        + setWeightKg(weight: double): void
+        + getGender(): Gender
+        + setGender(gender: Gender): void
+        + getRestingHeartRate(): int
+        + setRestingHeartRate(hr: int): void
+        + toString(): String
+    }
+
+    UserProfile --> "1" Gender : has a
+
+    abstract class WorkoutSession implements java.lang.Comparable {
+        - {static} nextId: int
+        - id: int
+        - title: String
+        - date: LocalDate
+        - durationMinutes: int
+        # WorkoutSession(title: String, date: LocalDate, durationMinutes: int)
+        # WorkoutSession(id: int, title: String, date: LocalDate, durationMinutes: int)
+        + {static} resetNextId(value: int): void
+        + {static} getNextId(): int
+        + getId(): int
+        + getTitle(): String
+        + setTitle(title: String): void
+        + getDate(): LocalDate
+        + setDate(date: LocalDate): void
+        + getDurationMinutes(): int
+        + setDurationMinutes(duration: int): void
+        + calculateCalories(profile: UserProfile, strategy: CalorieCalculationStrategy): double
+        + {abstract} getWorkoutType(): String
+        + {abstract} getSpecificDetails(): String
+        + {abstract} getBaseMetValue(): double
+        + compareTo(other: WorkoutSession): int
+        + equals(o: Object): boolean
+        + hashCode(): int
+        + toString(): String
+    }
+
+    class CardioWorkout extends WorkoutSession {
+        - distanceKm: double
+        - averageHeartRate: int
+        + CardioWorkout(title: String, date: LocalDate, duration: int, distance: double, avgHr: int)
+        + CardioWorkout(id: int, title: String, date: LocalDate, duration: int, distance: double, avgHr: int)
+        + getDistanceKm(): double
+        + setDistanceKm(distance: double): void
+        + getAverageHeartRate(): int
+        + setAverageHeartRate(hr: int): void
+        + getAverageSpeedKmH(): double
+        + getWorkoutType(): String
+        + getSpecificDetails(): String
+        + getBaseMetValue(): double
+    }
+
+    class StrengthWorkout extends WorkoutSession {
+        - sets: int
+        - reps: int
+        - weightKg: double
+        + StrengthWorkout(title: String, date: LocalDate, duration: int, sets: int, reps: int, weight: double)
+        + StrengthWorkout(id: int, title: String, date: LocalDate, duration: int, sets: int, reps: int, weight: double)
+        + getSets(): int
+        + setSets(sets: int): void
+        + getReps(): int
+        + setReps(reps: int): void
+        + getWeightKg(): double
+        + setWeightKg(weight: double): void
+        + getTotalTonnageKg(): double
+        + getWorkoutType(): String
+        + getSpecificDetails(): String
+        + getBaseMetValue(): double
+    }
+
+    class FlexibilityWorkout extends WorkoutSession {
+        - focusArea: String
+        - intensityLevel: int
+        + FlexibilityWorkout(title: String, date: LocalDate, duration: int, focus: String, intensity: int)
+        + FlexibilityWorkout(id: int, title: String, date: LocalDate, duration: int, focus: String, intensity: int)
+        + getFocusArea(): String
+        + setFocusArea(focus: String): void
+        + getIntensityLevel(): int
+        + setIntensityLevel(level: int): void
+        + getWorkoutType(): String
+        + getSpecificDetails(): String
+        + getBaseMetValue(): double
+    }
+}
+
+WorkoutSession ..> CalorieCalculationStrategy : uses (delegates calculation)
+
+package "hu.prog2.fittrack.persistence" {
+    class WorkoutData {
+        - profile: UserProfile
+        - sessions: List<WorkoutSession>
+        + WorkoutData()
+        + WorkoutData(profile: UserProfile, sessions: List<WorkoutSession>)
+        + getProfile(): UserProfile
+        + setProfile(profile: UserProfile): void
+        + getSessions(): List<WorkoutSession>
+        + setSessions(sessions: List<WorkoutSession>): void
+    }
+
+    WorkoutData *-- "1" UserProfile : composition
+    WorkoutData o-- "*" WorkoutSession : aggregation
+
+    interface WorkoutRepository <<interface>> {
+        + save(data: WorkoutData, destination: String): void
+        + load(source: String): WorkoutData
+    }
+
+    class GsonWorkoutRepository implements WorkoutRepository {
+        - gson: com.google.gson.Gson
+        + GsonWorkoutRepository()
+        + save(data: WorkoutData, destination: String): void
+        + load(source: String): WorkoutData
+        + getGson(): com.google.gson.Gson
+    }
+
+    class LocalDateAdapter
+    class WorkoutSessionAdapter
+    GsonWorkoutRepository ..> LocalDateAdapter : uses
+    GsonWorkoutRepository ..> WorkoutSessionAdapter : uses
+}
+
+package "hu.prog2.fittrack.service" {
+    class WorkoutTrackerService {
+        - repository: WorkoutRepository
+        - sessions: List<WorkoutSession>
+        - userProfile: UserProfile
+        - activeStrategy: CalorieCalculationStrategy
+        + WorkoutTrackerService(repository: WorkoutRepository)
+        + addWorkout(session: WorkoutSession): void
+        + removeWorkout(id: int): WorkoutSession
+        + findWorkoutById(id: int): WorkoutSession
+        + getAllWorkouts(): List<WorkoutSession>
+        + filterByType(workoutType: String): List<WorkoutSession>
+        + sortByNaturalDate(): List<WorkoutSession>
+        + sortByDurationAscending(): List<WorkoutSession>
+        + sortByDurationDescending(): List<WorkoutSession>
+        + sortByCaloriesDescending(): List<WorkoutSession>
+        + sortByName(): List<WorkoutSession>
+        + getTotalDurationMinutes(): int
+        + getTotalCaloriesBurned(): double
+        + getAverageDurationMinutes(): double
+        + getWorkoutCount(): int
+        + saveData(filePath: String): void
+        + loadData(filePath: String): void
+        + getUserProfile(): UserProfile
+        + setUserProfile(profile: UserProfile): void
+        + getActiveStrategy(): CalorieCalculationStrategy
+        + setActiveStrategy(strategy: CalorieCalculationStrategy): void
+    }
+
+    WorkoutTrackerService --> "1" WorkoutRepository : depends on
+    WorkoutTrackerService o-- "*" WorkoutSession : manages
+    WorkoutTrackerService --> "1" UserProfile : maintains
+    WorkoutTrackerService --> "1" CalorieCalculationStrategy : executes
+}
+
+package "hu.prog2.fittrack.ui" {
+    class ConsoleMenu {
+        - service: WorkoutTrackerService
+        - scanner: java.util.Scanner
+        - running: boolean
+        + ConsoleMenu(service: WorkoutTrackerService)
+        + start(): void
+    }
+
+    ConsoleMenu --> "1" WorkoutTrackerService : controls
+}
+
+class hu.prog2.fittrack.Main {
+    + {static} DEFAULT_DATA_PATH: String
+    + {static} main(args: String[]): void
+}
+
+hu.prog2.fittrack.Main ..> WorkoutTrackerService : initializes
+hu.prog2.fittrack.Main ..> GsonWorkoutRepository : creates
+hu.prog2.fittrack.Main ..> ConsoleMenu : launches
+
+@enduml
