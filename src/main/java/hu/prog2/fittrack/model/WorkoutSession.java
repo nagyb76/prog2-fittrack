@@ -1,6 +1,7 @@
 package hu.prog2.fittrack.model;
 
 import hu.prog2.fittrack.exception.InvalidWorkoutDataException;
+import hu.prog2.fittrack.strategy.CalorieCalculationStrategy;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -117,6 +118,20 @@ public abstract class WorkoutSession implements Comparable<WorkoutSession> {
      * Returns the typical MET (Metabolic Equivalent of Task) score for this activity.
      */
     public abstract double getBaseMetValue();
+
+    /**
+     * Calculates calories burned using the provided calculation strategy (Strategy Pattern).
+     *
+     * @param profile  the user's profile
+     * @param strategy the algorithm strategy to execute
+     * @return estimated calories burned
+     */
+     public double calculateCalories(UserProfile profile, CalorieCalculationStrategy strategy) {
+         if (strategy == null) {
+             return 0.0;
+         }
+         return strategy.calculateCalories(this, profile);
+     }
 
     /**
      * Natural ordering: most recent workouts first, then descending by ID.
