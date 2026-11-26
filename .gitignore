@@ -21,6 +21,5 @@ Thumbs.db
 Desktop.ini
 .DS_Store
 
-# Local runtime data files (preserve directory with sample data)
-data/workouts_runtime.json
-data/*.local.json
+# Local runtime data files
+data/
