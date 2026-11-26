@@ -48,7 +48,7 @@ public class Main {
 
     private static void seedSampleData(WorkoutTrackerService service) {
         try {
-            UserProfile profile = new UserProfile("Bence", 22, 75.0, Gender.MALE, 62);
+            UserProfile profile = new UserProfile("Athlete", 22, 75.0, Gender.MALE, 62);
             service.setUserProfile(profile);
 
             LocalDate today = LocalDate.now();

@@ -1,6 +1,6 @@
 # FitTrack - Workout & Calorie Tracker
 
-**Készítette:** Nagy Bence  
+**Készítette:** Nagy Balázs  
 **Tárgy:** Programozás 2 – Java OOP Projektfeladat  
 
 A FitTrack egy Java nyelvű, objektumorientált konzolos fitnesz- és edzéskövető alkalmazás. Különböző típusú edzésformák (kardió, súlyzós edzés, valamint nyújtás/jóga) naplózására, az elégetett kalóriák különböző algoritmusokkal történő becslésére, az edzések rendezésére/szűrésére és JSON alapú perzisztens tárolására szolgál.
@@ -118,7 +118,7 @@ java -jar target/fittrack-1.0.0.jar
                FITTRACK - WORKOUT & CALORIE TRACKER           
         Java OOP Projectwork | Strategy Pattern & Persistence 
 ===============================================================
-Active Profile: Bence
+Active Profile: Athlete
 Active Strategy: Heart-Rate Based (Keytel Precision)
 ===============================================================
 --- MAIN MENU ---
