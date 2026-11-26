@@ -82,7 +82,6 @@ fittrack/
 │       ├── persistence/
 │       ├── service/
 │       └── strategy/
-├── LICENSE
 ├── pom.xml
 └── README.md
 ```
